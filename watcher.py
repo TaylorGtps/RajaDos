@@ -8,7 +8,11 @@ API_TOKEN = '7991511524:AAE1ReD73oQ7p8MRhLtj8UQZf8FxTA1OeG0'
 ADMIN_ID = '7264431734'
 MAX_RESTARTS = 5
 RESTART_PERIOD = 60  # Seconds
+# Hapus webhook AKTIF terlebih dahulu
+bot.remove_webhook()
 
+# Mulai polling (bot akan ambil update sendiri)
+bot.polling()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 bot = Bot(API_TOKEN)
 
