@@ -1,20 +1,24 @@
 import subprocess
 import time
 import logging
-from aiogram import Bot
 import asyncio
+from aiogram import Bot
 
 API_TOKEN = '7991511524:AAE1ReD73oQ7p8MRhLtj8UQZf8FxTA1OeG0'
 ADMIN_ID = '7264431734'
 MAX_RESTARTS = 5
 RESTART_PERIOD = 60  # Seconds
-# Hapus webhook AKTIF terlebih dahulu
-bot.remove_webhook()
 
-# Mulai polling (bot akan ambil update sendiri)
-bot.polling()
+bot = Bot(token=API_TOKEN)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-bot = Bot(API_TOKEN)
+
+async def remove_webhook():
+    """Remove active webhook before using polling."""
+    try:
+        await bot.delete_webhook()
+        logging.info("Webhook deleted successfully.")
+    except Exception as e:
+        logging.error("Failed to delete webhook: %s", e)
 
 def start_bot():
     """Start the bot script as a subprocess."""
@@ -30,6 +34,8 @@ async def notify_admin(message):
 
 async def main():
     """Main function to manage bot process lifecycle."""
+    await remove_webhook()  # Ensure webhook is removed before polling starts
+
     restart_count = 0
     last_restart_time = time.time()
     
@@ -50,12 +56,11 @@ async def main():
 
         while process.poll() is None:
             await asyncio.sleep(5)
-        
+
         logging.warning("Bot process terminated. Restarting in 10 seconds...")
         await notify_admin("⚠️ The bot has crashed and will be restarted in 10 seconds.")
         restart_count += 1
         await asyncio.sleep(10)
-        
 
 if __name__ == '__main__':
     try:
